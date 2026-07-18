@@ -1,0 +1,46 @@
+:root {
+
+  /* Radius */
+
+  --radius-xs: 8px;
+  --radius-sm: 12px;
+  --radius-md: 18px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
+
+  /* Sidebar */
+
+  --sidebar-width: 280px;
+
+  --navbar-height: 76px;
+
+  /* Shadows */
+
+  --shadow-xs:
+    0 2px 8px rgb(0 0 0 / .08);
+
+  --shadow-sm:
+    0 8px 24px rgb(0 0 0 /.12);
+
+  --shadow-md:
+    0 16px 40px rgb(0 0 0 /.18);
+
+  --shadow-xl:
+    0 24px 80px rgb(0 0 0 /.28);
+
+  /* Blur */
+
+  --blur-sm:10px;
+
+  --blur-md:18px;
+
+  --blur-lg:28px;
+
+  /* Transition */
+
+  --transition-fast:150ms;
+
+  --transition:250ms;
+
+  --transition-slow:450ms;
+}
