@@ -32,3 +32,18 @@ export const designSystem = {
     `,
   },
 } as const;
+export const DESIGN_SYSTEM = {
+
+sidebarWidth:280,
+
+navbarHeight:76,
+
+radius:24,
+
+grid:8,
+
+animation:0.25,
+
+blur:18,
+
+} as const;

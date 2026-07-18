@@ -1,5 +1,3 @@
-// src/app/(auth)/forgot-password/page.tsx
-
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -20,17 +18,31 @@ export default async function ForgotPasswordPage() {
   } = await supabase.auth.getUser();
 
   if (user) {
-    const { data: profile } = await supabase
+    const { data: profile, error } = await supabase
       .from("profiles")
-      .select("role")
+      .select(
+        `
+        role_id,
+        roles (
+          name
+        )
+      `
+      )
       .eq("id", user.id)
       .single();
 
-    if (
-      profile &&
-      ["Admin", "Editor", "Writer"].includes(profile.role)
-    ) {
-      redirect("/dashboard");
+    if (!error && profile) {
+      const role =
+        profile.roles && !Array.isArray(profile.roles)
+          ? profile.roles.name
+          : undefined;
+
+      if (
+        role &&
+        ["Admin", "Editor", "Writer"].includes(role)
+      ) {
+        redirect("/dashboard");
+      }
     }
 
     redirect("/");

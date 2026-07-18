@@ -1,5 +1,3 @@
-// src/providers/AuthProvider.tsx
-
 "use client";
 
 import {
@@ -19,9 +17,7 @@ import type { Database } from "@/types/database";
 
 type Profile =
   Database["public"]["Tables"]["profiles"]["Row"] & {
-    roles:
-      | Database["public"]["Tables"]["roles"]["Row"]
-      | null;
+    roles: Database["public"]["Tables"]["roles"]["Row"] | null;
   };
 
 type AuthContextValue = {
@@ -30,12 +26,11 @@ type AuthContextValue = {
   profile: Profile | null;
   loading: boolean;
   authenticated: boolean;
+  role: string | null;
   refresh: () => Promise<void>;
 };
 
-const AuthContext = createContext<AuthContextValue | null>(
-  null
-);
+const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({
   children,
@@ -45,14 +40,9 @@ export function AuthProvider({
   const supabase = useMemo(() => createClient(), []);
 
   const [loading, setLoading] = useState(true);
-
-  const [session, setSession] =
-    useState<Session | null>(null);
-
+  const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
-
-  const [profile, setProfile] =
-    useState<Profile | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
 
   const loadProfile = useCallback(
     async (userId: string | null) => {
@@ -63,12 +53,15 @@ export function AuthProvider({
 
       const { data } = await supabase
         .from("profiles")
-        .select(
-          `
-            *,
-            roles(*)
-          `
-        )
+        .select(`
+          *,
+          roles (
+            id,
+            name,
+            description,
+            created_at
+          )
+        `)
         .eq("id", userId)
         .single();
 
@@ -109,7 +102,7 @@ export function AuthProvider({
     );
 
     return () => subscription.unsubscribe();
-  }, [loadProfile, refresh, supabase]);
+  }, [refresh, loadProfile, supabase]);
 
   const value = useMemo<AuthContextValue>(
     () => ({
@@ -118,15 +111,10 @@ export function AuthProvider({
       profile,
       loading,
       authenticated: !!session,
+      role: profile?.roles?.name ?? null,
       refresh,
     }),
-    [
-      user,
-      session,
-      profile,
-      loading,
-      refresh,
-    ]
+    [user, session, profile, loading, refresh]
   );
 
   return (

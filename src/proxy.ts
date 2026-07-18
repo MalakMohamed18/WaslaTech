@@ -41,32 +41,28 @@ export async function proxy(request: NextRequest) {
     return response;
   }
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select(`
-      id,
-      is_active,
-      roles (
-        name
-      )
-    `)
-    .eq("id", user.id)
-    .single();
+const { data: profile } = await supabase
+  .from("profiles")
+  .select("id,is_active,role_id")
+  .eq("id", user.id)
+  .single();
 
-  if (!profile || !profile.is_active) {
-    await supabase.auth.signOut();
+if (!profile || !profile.is_active) {
+  await supabase.auth.signOut();
 
-    const url = request.nextUrl.clone();
-    url.pathname = "/login";
+  const url = request.nextUrl.clone();
+  url.pathname = "/login";
 
-    return NextResponse.redirect(url);
-  }
+  return NextResponse.redirect(url);
+}
 
-  const role =
-    Array.isArray(profile.roles)
-      ? profile.roles[0]?.name
-      : profile.roles?.name;
+const { data: roleRow } = await supabase
+  .from("roles")
+  .select("name")
+  .eq("id", profile.role_id)
+  .single();
 
+const role = roleRow?.name;
   if (
     AUTH_ROUTES.includes(pathname as (typeof AUTH_ROUTES)[number])
   ) {
